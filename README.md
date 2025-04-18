@@ -3,7 +3,7 @@
 > Real-time object detection dashboard powered by YOLOv8 and OpenCV
 
 <p align="center">
-  <img src="assets/detection.jpg" alt="SmartVision AI Screenshot" width="80%">
+  <img src="assets/detection.gif" alt="SmartVision AI Screenshot" width="80%">
 </p>
 
 SmartVision AI is a comprehensive object detection application that captures live webcam video, detects and labels objects in real-time, counts them, and offers export functionality for screenshots and logs.
