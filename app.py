@@ -6,6 +6,9 @@ from threading import Thread, Event
 import queue
 from detect import run_detection, init_model
 from utils import save_screenshot, create_placeholder_image
+import os
+os.environ["DISPLAY"] = ":0"
+
 
 st.set_page_config(page_title="SmartVision AI", layout="wide")
 
