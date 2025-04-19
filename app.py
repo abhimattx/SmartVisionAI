@@ -65,23 +65,13 @@ if st.session_state.running:
     st.sidebar.subheader("Detection Statistics")
     stats_placeholder = st.sidebar.empty()
 
-# Add this after creating the app interface
 if st.session_state.running:
-    # Check if camera is available on this platform
-    is_demo_mode = False
-    
-    try:
-        temp_cap = cv2.VideoCapture(camera_id)
-        is_camera_available = temp_cap.isOpened()
-        if temp_cap.isOpened():
-            temp_cap.release()
-        else:
-            is_demo_mode = True
-    except:
-        is_demo_mode = True
-    
-    if is_demo_mode:
+    # Check if camera is available
+    temp_cap = cv2.VideoCapture(camera_id)
+    if not temp_cap.isOpened():
         st.warning("⚠️ Camera not available. Running in demo mode with sample data.")
+    else:
+        temp_cap.release()
 
 # Run the detection in a separate thread when active
 if st.session_state.running:

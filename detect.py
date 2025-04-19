@@ -3,6 +3,7 @@ import time
 import numpy as np
 from ultralytics import YOLO
 import queue
+import os
 
 def init_model(model_path):
     """Initialize the YOLO model"""
@@ -13,25 +14,65 @@ def init_model(model_path):
         return None
 
 def run_detection(camera_id, model_path, confidence_threshold, frame_queue, stop_event, detection_count):
-    """Run object detection on camera frames"""
+    """Run object detection on camera frames with fallback options"""
+    
+    # Try to open camera
     cap = cv2.VideoCapture(camera_id)
+    
+    # Check if camera opened successfully
     if not cap.isOpened():
-        print("Error: Could not open camera.")
-        stop_event.set()
-        return
+        print("Warning: Could not open camera. Using demo mode.")
+        # Try demo mode options in sequence
+        
+        # Option 1: Try demo video if available
+        demo_video = "assets/detection.gif"
+        if os.path.exists(demo_video):
+            cap = cv2.VideoCapture(demo_video)
+        
+        # Option 2: If no video, use static images in sequence
+        if not cap.isOpened():
+            use_static_images = True
+            # List of sample images with objects
+            sample_images = ["assets/sample1.jpg", "assets/sample2.jpg"]
+            img_index = 0
+        else:
+            use_static_images = False
+    else:
+        use_static_images = False
 
     try:
         model = init_model(model_path)
         if model is None:
             stop_event.set()
             return
-            
+        
         prev_time = time.time()
-
+        
         while not stop_event.is_set():
-            ret, frame = cap.read()
+            # Get frame (from camera, video or static images)
+            if use_static_images:
+                # Cycle through sample images
+                if os.path.exists(sample_images[img_index]):
+                    frame = cv2.imread(sample_images[img_index])
+                    img_index = (img_index + 1) % len(sample_images)
+                    time.sleep(2)  # Show each image for 2 seconds
+                    ret = True
+                else:
+                    # Create blank frame with text if no sample images found
+                    frame = np.zeros((480, 640, 3), dtype=np.uint8)
+                    cv2.putText(frame, "Demo Mode - No Samples Found", (50, 240), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+                    ret = True
+            else:
+                # Regular video capture
+                ret, frame = cap.read()
+                
+            if not ret and not use_static_images and os.path.exists(demo_video):
+                cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset to beginning
+                ret, frame = cap.read()
+
             if not ret:
-                print("Error: Failed to capture frame.")
+                print("Failed to grab frame")
                 break
 
             # Calculate FPS
@@ -85,4 +126,5 @@ def run_detection(camera_id, model_path, confidence_threshold, frame_queue, stop
     except Exception as e:
         print(f"Error in detection thread: {str(e)}")
     finally:
-        cap.release()
+        if not use_static_images and cap.isOpened():
+            cap.release()
