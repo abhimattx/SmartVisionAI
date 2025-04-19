@@ -24,12 +24,12 @@ def run_detection(camera_id, model_path, confidence_threshold, frame_queue, stop
         print("Warning: Could not open camera. Using demo mode.")
         # Try demo mode options in sequence
         
-        # Option 1: Try demo video if available
-        demo_video = "assets/detection.gif"
-        if os.path.exists(demo_video):
+
+        demo_video = "assets/detection.mp4"
+        if os.path.exists(demo_video):  
             cap = cv2.VideoCapture(demo_video)
         
-        # Option 2: If no video, use static images in sequence
+       
         if not cap.isOpened():
             use_static_images = True
             # List of sample images with objects
