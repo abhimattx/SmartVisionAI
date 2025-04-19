@@ -19,6 +19,21 @@ SmartVision AI is a comprehensive object detection application that captures liv
 | Fast frame processing | Start/stop buttons | Object counting statistics |
 | Bounding boxes & labels | | Timestamped data |
 
+---
+
+## 🆘 Demo Fallback Mode
+
+> Streamlit Cloud cannot access your local webcam.
+
+If the app is deployed on a remote platform (e.g., Streamlit Cloud), and the webcam fails to initialize, SmartVision AI will automatically:
+
+1. Attempt to use a sample video located at: `assets/detection.mp4`
+2. If that fails, it will fallback to cycling through static images: `assets/sample1.jpg`, `sample2.jpg`
+
+This ensures the app always remains demo-ready — even without access to a physical camera.
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
